@@ -45,7 +45,7 @@ app.post("/horario", async function(req, res) {
 
                 body: JSON.stringify({
 
-                    number: "COLOQUE_AQUI_O_NUMERO_OU_ID_DO_GRUPO",
+                    number: "120363139929290271@g.us",
 
                     text: `🎬 Cinema Domingo!
 
