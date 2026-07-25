@@ -3,35 +3,88 @@ const cors = require("cors");
 
 const app = express();
 
-// Permite que o seu site converse com o backend
 app.use(cors({
     origin: "https://skoriee.github.io"
 }));
 
 app.use(express.json());
 
-// Rota inicial
+
+// ==========================
+// ROTA PRINCIPAL
+// ==========================
+
 app.get("/", function(req, res) {
 
     res.send("Backend do Cinema Domingo funcionando! 🎬");
 
 });
 
-// Recebe o horário escolhido
-app.post("/horario", function(req, res) {
+
+// ==========================
+// RECEBER HORÁRIO
+// ==========================
+
+app.post("/horario", async function(req, res) {
 
     const horario = req.body.horario;
 
     console.log("Horário escolhido:", horario);
 
-    res.json({
-        sucesso: true,
-        mensagem: "Horário recebido!"
-    });
+    try {
+
+        const resposta = await fetch(
+            `${process.env.EVOLUTION_URL}/message/sendText/${process.env.EVOLUTION_INSTANCE}`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": process.env.EVOLUTION_API_KEY
+                },
+
+                body: JSON.stringify({
+
+                    number: "COLOQUE_AQUI_O_NUMERO_OU_ID_DO_GRUPO",
+
+                    text: `🎬 Cinema Domingo!
+
+Ela escolheu o horário: ${horario} 🥰❤️`
+
+                })
+
+            }
+        );
+
+        const dados = await resposta.json();
+
+        console.log("Resposta da Evolution API:", dados);
+
+        res.json({
+
+            sucesso: true,
+            mensagem: "Horário recebido e mensagem enviada!"
+
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao enviar mensagem:", erro);
+
+        res.status(500).json({
+
+            sucesso: false,
+            mensagem: "Erro ao enviar mensagem."
+
+        });
+
+    }
 
 });
 
+
 const PORT = process.env.PORT || 3000;
+
 
 app.listen(PORT, function() {
 
